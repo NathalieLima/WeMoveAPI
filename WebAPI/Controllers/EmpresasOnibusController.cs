@@ -20,14 +20,14 @@ public class EmpresasOnibusController : ControllerBase
     public IActionResult Post(NewEmpresaOnibusInput empresa) 
     {
         EmpresaOnibus novaEmpresa = new EmpresaOnibus {
-            Id = new Guid(),
+            CNPJ = empresa.CNPJ,
             Nome = empresa.Nome,
         };
 
         _dbContext.EmpresasOnibus.Add(novaEmpresa);
         _dbContext.SaveChanges();
 
-        return CreatedAtAction(nameof(Post), new { id = novaEmpresa.Id }, novaEmpresa);
+        return CreatedAtAction(nameof(Post), new { cnpj = novaEmpresa.CNPJ }, novaEmpresa);
     }
 
     [HttpGet]

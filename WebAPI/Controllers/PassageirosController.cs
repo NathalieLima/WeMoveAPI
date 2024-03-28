@@ -20,13 +20,13 @@ public class PassageirosController : ControllerBase
     public IActionResult Post(NewPassageiroInput passageiro) 
     {
         var usuarioDB = _dbContext.Usuarios.FirstOrDefault(usuario => usuario.Email == passageiro.EmailUsuario);
-        var instituicaoDB = _dbContext.Instituicoes.FirstOrDefault(instituicao => instituicao.Nome == passageiro.NomeInstituicao);
+        // var instituicaoDB = _dbContext.Instituicoes.FirstOrDefault(instituicao => instituicao.CNPJ == passageiro.InstituicaoCNPJ);
 
-        if (usuarioDB != null && instituicaoDB != null)
+        if (usuarioDB != null)
         {
             var novoPassageiro = new Passageiro {
                 ComprovanteInstituicao = passageiro.ComprovanteInstituicao,
-                Instituicao = instituicaoDB,
+                InstituicaoCNPJ = passageiro.InstituicaoCNPJ,
                 Usuario = usuarioDB
             };
 
@@ -35,7 +35,7 @@ public class PassageirosController : ControllerBase
 
             return CreatedAtAction(nameof(Post), new { 
                 comprovante = novoPassageiro.ComprovanteInstituicao, 
-                instituicao = novoPassageiro.Instituicao 
+                instituicao = novoPassageiro.InstituicaoCNPJ 
             }, novoPassageiro);
         }
 
@@ -49,10 +49,10 @@ public class PassageirosController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetById(string comprovante, string instituicao)
+    public IActionResult GetById(string comprovante, string instituicaoCNPJ)
     {
         var passageiro = _dbContext.Passageiros.ToList()
-        .FirstOrDefault(passageiro => passageiro.ComprovanteInstituicao == comprovante && passageiro.Instituicao.Nome == instituicao);
+        .FirstOrDefault(passageiro => passageiro.ComprovanteInstituicao == comprovante && passageiro.InstituicaoCNPJ == instituicaoCNPJ);
 
         if (passageiro != null) {
             return Ok(passageiro);

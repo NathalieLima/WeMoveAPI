@@ -11,8 +11,8 @@ using PersonsApi.Data;
 namespace WebAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240326021025_MaisAtt")]
-    partial class MaisAtt
+    [Migration("20240328142520_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,15 +22,46 @@ namespace WebAPI.Migrations
                 .HasAnnotation("ProductVersion", "7.0.17")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("WebAPI.Models.Dispositivo", b =>
+            modelBuilder.Entity("WebAPI.Models.DadosDispositivo", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("NomeFornecedora")
+                    b.Property<string>("DispositivoId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("IrregularidadeSolo")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<int>("Latitude")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Longitude")
+                        .HasColumnType("int");
+
+                    b.Property<string>("QualidadeAr")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Temperatura")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Velocidade")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DispositivoId");
+
+                    b.ToTable("DadosDispositivos");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Dispositivo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
 
                     b.Property<Guid>("OnibusId")
                         .HasColumnType("char(36)");
@@ -48,24 +79,22 @@ namespace WebAPI.Migrations
 
             modelBuilder.Entity("WebAPI.Models.EmpresaOnibus", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                    b.Property<string>("CNPJ")
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.HasKey("Id");
+                    b.HasKey("CNPJ");
 
                     b.ToTable("EmpresasOnibus");
                 });
 
             modelBuilder.Entity("WebAPI.Models.Instituicao", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<string>("CNPJ")
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Endereco")
                         .IsRequired()
@@ -75,11 +104,15 @@ namespace WebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Telefone")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Tipo")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.HasKey("Id");
+                    b.HasKey("CNPJ");
 
                     b.ToTable("Instituicoes");
                 });
@@ -111,12 +144,11 @@ namespace WebAPI.Migrations
                     b.Property<string>("Placa")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("Capacidade")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int>("Capacidade")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("EmpresaOnibusId")
-                        .HasColumnType("char(36)");
+                    b.Property<string>("EmpresaOnibusCNPJ")
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int>("Linha")
                         .HasColumnType("int");
@@ -126,23 +158,18 @@ namespace WebAPI.Migrations
 
                     b.HasKey("Id", "Placa");
 
-                    b.HasIndex("EmpresaOnibusId");
+                    b.HasIndex("EmpresaOnibusCNPJ");
 
                     b.ToTable("Onibus");
                 });
 
             modelBuilder.Entity("WebAPI.Models.Passageiro", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
                     b.Property<string>("ComprovanteInstituicao")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
-                    b.Property<int>("IdInstituicaoId")
-                        .HasColumnType("int");
+                    b.Property<string>("InstituicaoCNPJ")
+                        .HasColumnType("varchar(255)");
 
                     b.Property<Guid?>("TransportePrivadosId")
                         .HasColumnType("char(36)");
@@ -154,12 +181,10 @@ namespace WebAPI.Migrations
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("char(36)");
 
-                    b.Property<int?>("ViagemCaronaOfertaId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("ViagemCaronaOfertaId")
+                        .HasColumnType("char(36)");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdInstituicaoId");
+                    b.HasKey("ComprovanteInstituicao", "InstituicaoCNPJ");
 
                     b.HasIndex("TransportePrivadosId");
 
@@ -176,9 +201,8 @@ namespace WebAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("Capacidade")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int>("Capacidade")
+                        .HasColumnType("int");
 
                     b.Property<string>("DonoEmail")
                         .IsRequired()
@@ -225,9 +249,9 @@ namespace WebAPI.Migrations
 
             modelBuilder.Entity("WebAPI.Models.ViagemCaronaOferta", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Destino")
                         .IsRequired()
@@ -262,9 +286,9 @@ namespace WebAPI.Migrations
 
             modelBuilder.Entity("WebAPI.Models.ViagemOnibus", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Destino")
                         .IsRequired()
@@ -279,6 +303,13 @@ namespace WebAPI.Migrations
                     b.Property<string>("MotoristaCNH")
                         .HasColumnType("varchar(255)");
 
+                    b.Property<Guid>("OnibusId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("OnibusPlaca")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("Origem")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -291,7 +322,18 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("MotoristaCNH");
 
+                    b.HasIndex("OnibusId", "OnibusPlaca");
+
                     b.ToTable("ViagensOnibus");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.DadosDispositivo", b =>
+                {
+                    b.HasOne("WebAPI.Models.Dispositivo", "Dispositivo")
+                        .WithMany()
+                        .HasForeignKey("DispositivoId");
+
+                    b.Navigation("Dispositivo");
                 });
 
             modelBuilder.Entity("WebAPI.Models.Dispositivo", b =>
@@ -320,21 +362,13 @@ namespace WebAPI.Migrations
                 {
                     b.HasOne("WebAPI.Models.EmpresaOnibus", "EmpresaOnibus")
                         .WithMany()
-                        .HasForeignKey("EmpresaOnibusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("EmpresaOnibusCNPJ");
 
                     b.Navigation("EmpresaOnibus");
                 });
 
             modelBuilder.Entity("WebAPI.Models.Passageiro", b =>
                 {
-                    b.HasOne("WebAPI.Models.Instituicao", "IdInstituicao")
-                        .WithMany()
-                        .HasForeignKey("IdInstituicaoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("WebAPI.Models.TransportePrivados", null)
                         .WithMany("Passageiros")
                         .HasForeignKey("TransportePrivadosId");
@@ -348,8 +382,6 @@ namespace WebAPI.Migrations
                         .HasForeignKey("UsuarioId", "UsuarioEmail")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("IdInstituicao");
 
                     b.Navigation("Usuario");
                 });
@@ -380,7 +412,15 @@ namespace WebAPI.Migrations
                         .WithMany()
                         .HasForeignKey("MotoristaCNH");
 
+                    b.HasOne("WebAPI.Models.Onibus", "Onibus")
+                        .WithMany()
+                        .HasForeignKey("OnibusId", "OnibusPlaca")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Motorista");
+
+                    b.Navigation("Onibus");
                 });
 
             modelBuilder.Entity("WebAPI.Models.TransportePrivados", b =>

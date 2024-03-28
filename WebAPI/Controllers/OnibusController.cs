@@ -19,7 +19,7 @@ public class OnibusController : ControllerBase
     [HttpPost]
     public IActionResult Post(NewOnibusInput onibus) 
     {
-        var empresaOnibusDB = _dbContext.EmpresasOnibus.FirstOrDefault(empresa => empresa.Nome == onibus.EmpresaOnibusNome);
+        var empresaOnibusDB = _dbContext.EmpresasOnibus.FirstOrDefault(empresa => empresa.CNPJ == onibus.EmpresaOnibusCNPJ);
 
         if (empresaOnibusDB != null) 
         {

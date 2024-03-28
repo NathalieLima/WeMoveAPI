@@ -30,6 +30,10 @@ public class DadosDispositivoController : ControllerBase
                 Dispositivo = dispositivoDB,
                 Latitude = dados.Latitude,
                 Longitude = dados.Longitude,
+                IrregularidadeSolo = dados.IrregularidadeSolo,
+                QualidadeAr = dados.QualidadeAr,
+                Temperatura = dados.Temperatura,
+                Velocidade = dados.Velocidade
             };
 
             _dbContext.DadosDispositivos.Add(novoDado);
