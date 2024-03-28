@@ -1,5 +1,7 @@
-namespace WebAPI.Models;
-public class Instituicao
+using WebAPI.Models;
+
+namespace WebAPI.InputModels;
+public class NewInstituicaoInput 
 {
     public required string CNPJ { get; set; }
     public required string Nome { get; set; }

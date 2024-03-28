@@ -9,12 +9,10 @@ namespace WebAPI.Controllers;
 [Route("[controller]")]
 public class MotoristasController : ControllerBase
 {
-    private readonly ILogger<WeatherForecastController> _logger;
     private readonly ApplicationDbContext _dbContext;
 
-    public MotoristasController(ILogger<WeatherForecastController> logger, ApplicationDbContext dbContext)
+    public MotoristasController(ApplicationDbContext dbContext)
     {
-        _logger = logger;
         _dbContext = dbContext;
     }
 
@@ -44,17 +42,5 @@ public class MotoristasController : ControllerBase
     public ICollection<Motorista> GetById()
     {
         return _dbContext.Motoristas.ToList();
-    }
-
-    [HttpPut]
-    public IActionResult Update()
-    {
-        return Ok();
-    }
-
-    [HttpDelete]
-    public IActionResult Delete()
-    {
-        return Ok();
     }
 }

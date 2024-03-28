@@ -9,12 +9,10 @@ namespace WebAPI.Controllers;
 [Route("[controller]")]
 public class OnibusController : ControllerBase
 {
-    private readonly ILogger<WeatherForecastController> _logger;
     private readonly ApplicationDbContext _dbContext;
 
-    public OnibusController(ILogger<WeatherForecastController> logger, ApplicationDbContext dbContext)
+    public OnibusController(ApplicationDbContext dbContext)
     {
-        _logger = logger;
         _dbContext = dbContext;
     }
 
@@ -30,8 +28,6 @@ public class OnibusController : ControllerBase
                 EmpresaOnibus = empresaOnibusDB,
                 Placa = onibus.Placa,
                 TemArCondicionado = onibus.TemArCondicionado,
-                Tipo = onibus.Tipo
-
             };
 
             _dbContext.Onibus.Add(novoOnibus);
@@ -55,17 +51,5 @@ public class OnibusController : ControllerBase
         var onibusDB = _dbContext.Onibus.FirstOrDefault(onibus => onibus.Id == id);
 
         return Ok(onibusDB);
-    }
-
-    [HttpPut]
-    public IActionResult Update()
-    {
-        return Ok();
-    }
-
-    [HttpDelete]
-    public IActionResult Delete()
-    {
-        return Ok();
     }
 }

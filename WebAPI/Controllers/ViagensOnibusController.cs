@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PersonsApi.Data;
+using WebAPI.InputModels;
 using WebAPI.Models;
 
 namespace WebAPI.Controllers;
@@ -8,20 +9,40 @@ namespace WebAPI.Controllers;
 [Route("[controller]")]
 public class ViagensOnibusController : ControllerBase
 {
-    private readonly ILogger<WeatherForecastController> _logger;
     private readonly ApplicationDbContext _dbContext;
 
-    public ViagensOnibusController(ILogger<WeatherForecastController> logger, ApplicationDbContext dbContext)
+    public ViagensOnibusController(ApplicationDbContext dbContext)
     {
-        _logger = logger;
         _dbContext = dbContext;
     }
 
     [HttpPost]
-    public void Post(ViagemCaronaOferta viagem) 
+    public IActionResult Post(NewViagemOnibusInput viagem) 
     {
-        _dbContext.ViagensCaronaOferta.Add(viagem);
-        _dbContext.SaveChanges();
+        var motoristaDB = _dbContext.Motoristas.FirstOrDefault(motorista => motorista.CNH == viagem.CNHMotorista);
+        var onibusDB = _dbContext.Onibus.FirstOrDefault(onibus => onibus.Id == viagem.OnibusId);
+
+        if (motoristaDB != null && onibusDB != null) 
+        {
+            var novaViagem = new ViagemOnibus {
+                Id = Guid.NewGuid(),
+                Destino = viagem.Destino,
+                Origem = viagem.Origem,
+                Dia = viagem.Dia,
+                HoraSaida = viagem.HoraSaida,
+                Rota = viagem.Rota,
+                Motorista = motoristaDB,
+                Onibus = onibusDB
+
+            };
+
+            _dbContext.ViagensOnibus.Add(novaViagem);
+            _dbContext.SaveChanges();
+            
+            return CreatedAtAction(nameof(Post), new { id = novaViagem.Id }, novaViagem);
+        }
+
+        return NotFound();
     }
 
     [HttpGet]
@@ -34,17 +55,5 @@ public class ViagensOnibusController : ControllerBase
     public ICollection<ViagemCaronaOferta> GetById()
     {
         return _dbContext.ViagensCaronaOferta.ToList();
-    }
-
-    [HttpPut]
-    public IActionResult Update()
-    {
-        return Ok();
-    }
-
-    [HttpDelete]
-    public IActionResult Delete()
-    {
-        return Ok();
     }
 }

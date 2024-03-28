@@ -11,30 +11,37 @@ namespace WebAPI.Controllers;
 [Route("[controller]")]
 public class DadosDispositivoController : ControllerBase
 {
-    private readonly ILogger<WeatherForecastController> _logger;
     private readonly ApplicationDbContext _dbContext;
 
-    public DadosDispositivoController(ILogger<WeatherForecastController> logger, ApplicationDbContext dbContext)
+    public DadosDispositivoController(ApplicationDbContext dbContext)
     {
-        _logger = logger;
         _dbContext = dbContext;
     }
 
     [HttpPost]
-    public IActionResult Post(EmpresaOnibus empresa) 
+    public IActionResult Post(NewDadosDispositivoInput dados) 
     {
-        EmpresaOnibus novaEmpresa = new EmpresaOnibus {
-            // Id = new Guid(),
-            Nome = empresa.Nome,
-        };
+        var dispositivoDB = _dbContext.Dispositivos.FirstOrDefault(dispositivo => dispositivo.Id == dados.DispositivoId);
 
-        _dbContext.EmpresasOnibus.Add(novaEmpresa);
-        _dbContext.SaveChanges();
+        if (dispositivoDB != null) 
+        {
+            var novoDado = new DadosDispositivo {
+                Id = Guid.NewGuid(),
+                Dispositivo = dispositivoDB,
+                Latitude = dados.Latitude,
+                Longitude = dados.Longitude,
+            };
 
-        return CreatedAtAction(nameof(Post), new { id = novaEmpresa.Id }, novaEmpresa);
+            _dbContext.DadosDispositivos.Add(novoDado);
+            _dbContext.SaveChanges();
+
+            return CreatedAtAction(nameof(Post), new { id = novoDado.Id }, novoDado);
+        }
+        
+        return NotFound();
     }
 
-    [HttpGet("empresas")]
+    [HttpGet]
     public IActionResult Get()
     {
         var empresas = _dbContext.EmpresasOnibus.ToList();
@@ -42,22 +49,15 @@ public class DadosDispositivoController : ControllerBase
         return Ok(empresas);
     }
 
-    [HttpGet("empresas/{id}")]
-    public IActionResult GetById([FromBody] Guid usuarioId)
+    [HttpGet("{id}")]
+    public IActionResult GetById([FromBody] Guid idDispositivo)
     {
-        var usuarios = _dbContext.ViagensCaronaOferta.ToList();
-        var usuarioDB = usuarios.FirstOrDefault(usuario => usuario.Id != 1);
+        var usuarioDB = _dbContext.ViagensCaronaOferta.FirstOrDefault(dispositivo => dispositivo.Id == idDispositivo);
 
         return Ok(usuarioDB);
     }
 
-    [HttpPut("empresa/{id}")]
-    public IActionResult Update()
-    {
-        return Ok();
-    }
-
-    [HttpDelete("empresa/{id}")]
+    [HttpDelete("{id}")]
     public IActionResult Delete()
     {
         return Ok();

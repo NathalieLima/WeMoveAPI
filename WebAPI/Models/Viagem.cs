@@ -1,20 +1,15 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 namespace WebAPI.Models;
 
 public class Viagem
 {
-    public int Id { get; set; } = default!;
+    public Guid Id { get; set; } = default!;
     public string Origem { get; set; } = default!;
     public required string Destino { get; set; }
-    public required string Rota { get; set; }
+    public required string Rota { get; set; } //ser array
+    public required DateOnly Dia { get; set; }
 
-    [DataType(DataType.Date)]
-    [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
-    public required DateTime Dia { get; set; }
-
-    public required string HoraSaida { get; set; }
+    public required TimeOnly HoraSaida { get; set; }
     public Motorista Motorista { get; set; }
-
 }
+
+// alguma forma de ativar a viagem

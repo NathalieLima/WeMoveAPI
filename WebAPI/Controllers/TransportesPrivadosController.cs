@@ -8,12 +8,10 @@ namespace WebAPI.Controllers;
 [Route("[controller]")]
 public class TransportePrivadosController : ControllerBase
 {
-    private readonly ILogger<WeatherForecastController> _logger;
     private readonly ApplicationDbContext _dbContext;
 
-    public TransportePrivadosController(ILogger<WeatherForecastController> logger, ApplicationDbContext dbContext)
+    public TransportePrivadosController(ApplicationDbContext dbContext)
     {
-        _logger = logger;
         _dbContext = dbContext;
     }
 

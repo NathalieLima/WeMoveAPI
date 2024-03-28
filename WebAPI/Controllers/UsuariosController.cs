@@ -9,19 +9,17 @@ namespace WebAPI.Controllers;
 [Route("[controller]")]
 public class UsuariosController : ControllerBase
 {
-    private readonly ILogger<WeatherForecastController> _logger;
     private readonly ApplicationDbContext _dbContext;
 
-    public UsuariosController(ILogger<WeatherForecastController> logger, ApplicationDbContext dbContext)
+    public UsuariosController(ApplicationDbContext dbContext)
     {
-        _logger = logger;
         _dbContext = dbContext;
     }
 
     [HttpPost]
     public IActionResult Post(NewUsuarioInput usuario) 
     {
-        Usuario usuario1 = new Usuario {
+        Usuario novoUsuario = new Usuario {
             Nome = usuario.Nome,
             Apelido = usuario.Apelido,
             Email = usuario.Email,
@@ -29,10 +27,10 @@ public class UsuariosController : ControllerBase
             Id = new Guid()
         };
 
-        _dbContext.Usuarios.Add(usuario1);
+        _dbContext.Usuarios.Add(novoUsuario);
         _dbContext.SaveChanges();
 
-        return CreatedAtAction(nameof(Post), new { id = usuario1.Id }, usuario1);
+        return CreatedAtAction(nameof(Post), new { id = novoUsuario.Id }, novoUsuario);
     }
 
     [HttpGet]
@@ -41,24 +39,11 @@ public class UsuariosController : ControllerBase
         return _dbContext.Usuarios.ToList();
     }
 
-    [HttpGet("usuario/{id}")]
+    [HttpGet("{id}")]
     public IActionResult GetById([FromBody] Guid usuarioId)
     {
-        var usuarios = _dbContext.ViagensCaronaOferta.ToList();
-        var usuarioDB = usuarios.FirstOrDefault(usuario => usuario.Id != 1);
+        var usuarioDB = _dbContext.Usuarios.FirstOrDefault(usuario => usuario.Id == usuarioId);
 
         return Ok(usuarioDB);
-    }
-
-    [HttpPut("usuario/{id}")]
-    public IActionResult Update()
-    {
-        return Ok();
-    }
-
-    [HttpDelete("usuario/{id}")]
-    public IActionResult Delete()
-    {
-        return Ok();
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PersonsApi.Data;
+using WebAPI.InputModels;
 using WebAPI.Models;
 
 namespace WebAPI.Controllers;
@@ -8,43 +9,55 @@ namespace WebAPI.Controllers;
 [Route("[controller]")]
 public class PassageirosController : ControllerBase
 {
-    private readonly ILogger<WeatherForecastController> _logger;
     private readonly ApplicationDbContext _dbContext;
 
-    public PassageirosController(ILogger<WeatherForecastController> logger, ApplicationDbContext dbContext)
+    public PassageirosController(ApplicationDbContext dbContext)
     {
-        _logger = logger;
         _dbContext = dbContext;
     }
 
     [HttpPost]
-    public void Post(ViagemCaronaOferta viagem) 
+    public IActionResult Post(NewPassageiroInput passageiro) 
     {
-        _dbContext.ViagensCaronaOferta.Add(viagem);
-        _dbContext.SaveChanges();
+        var usuarioDB = _dbContext.Usuarios.FirstOrDefault(usuario => usuario.Email == passageiro.EmailUsuario);
+        var instituicaoDB = _dbContext.Instituicoes.FirstOrDefault(instituicao => instituicao.Nome == passageiro.NomeInstituicao);
+
+        if (usuarioDB != null && instituicaoDB != null)
+        {
+            var novoPassageiro = new Passageiro {
+                ComprovanteInstituicao = passageiro.ComprovanteInstituicao,
+                Instituicao = instituicaoDB,
+                Usuario = usuarioDB
+            };
+
+            _dbContext.Passageiros.Add(novoPassageiro);
+            _dbContext.SaveChanges();
+
+            return CreatedAtAction(nameof(Post), new { 
+                comprovante = novoPassageiro.ComprovanteInstituicao, 
+                instituicao = novoPassageiro.Instituicao 
+            }, novoPassageiro);
+        }
+
+        return NotFound();
     }
 
     [HttpGet]
-    public ICollection<ViagemCaronaOferta> Get()
+    public ICollection<Passageiro> Get()
     {
-        return _dbContext.ViagensCaronaOferta.ToList();
+        return _dbContext.Passageiros.ToList();
     }
 
     [HttpGet("{id}")]
-    public ICollection<ViagemCaronaOferta> GetById()
+    public IActionResult GetById(string comprovante, string instituicao)
     {
-        return _dbContext.ViagensCaronaOferta.ToList();
-    }
+        var passageiro = _dbContext.Passageiros.ToList()
+        .FirstOrDefault(passageiro => passageiro.ComprovanteInstituicao == comprovante && passageiro.Instituicao.Nome == instituicao);
 
-    [HttpPut]
-    public IActionResult Update()
-    {
-        return Ok();
-    }
+        if (passageiro != null) {
+            return Ok(passageiro);
+        }
 
-    [HttpDelete]
-    public IActionResult Delete()
-    {
-        return Ok();
+        return NotFound();
     }
 }

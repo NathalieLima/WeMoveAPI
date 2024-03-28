@@ -6,14 +6,12 @@ namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ViagemOfertaCaronaController : ControllerBase
+public class ViagensOfertaCaronasController : ControllerBase
 {
-    private readonly ILogger<WeatherForecastController> _logger;
     private readonly ApplicationDbContext _dbContext;
 
-    public ViagemOfertaCaronaController(ILogger<WeatherForecastController> logger, ApplicationDbContext dbContext)
+    public ViagensOfertaCaronasController(ApplicationDbContext dbContext)
     {
-        _logger = logger;
         _dbContext = dbContext;
     }
 
@@ -34,17 +32,5 @@ public class ViagemOfertaCaronaController : ControllerBase
     public ICollection<ViagemCaronaOferta> GetById()
     {
         return _dbContext.ViagensCaronaOferta.ToList();
-    }
-
-    [HttpPut]
-    public IActionResult Update()
-    {
-        return Ok();
-    }
-
-    [HttpDelete]
-    public IActionResult Delete()
-    {
-        return Ok();
     }
 }

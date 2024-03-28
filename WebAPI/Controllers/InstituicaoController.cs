@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PersonsApi.Data;
+using WebAPI.InputModels;
 using WebAPI.Models;
 
 namespace WebAPI.Controllers;
@@ -8,33 +9,33 @@ namespace WebAPI.Controllers;
 [Route("[controller]")]
 public class InstituicoesController : ControllerBase
 {
-    private static readonly List<Viagem> Summaries = new List<Viagem>();
-
-    private readonly ILogger<WeatherForecastController> _logger;
     private readonly ApplicationDbContext _dbContext;
 
-    public InstituicoesController(ILogger<WeatherForecastController> logger, ApplicationDbContext dbContext)
+    public InstituicoesController(ApplicationDbContext dbContext)
     {
-        _logger = logger;
         _dbContext = dbContext;
     }
 
     [HttpPost(Name = "CreateInstituicao")]
-    public void Post(Instituicao instituicao) 
+    public IActionResult Post(NewInstituicaoInput instituicao) 
     {
-        _dbContext.Instituicoes.Add(instituicao);
+        var novaInstituicao = new Instituicao {
+            Nome = instituicao.Nome,
+            CNPJ = instituicao.CNPJ,
+            Endereco = instituicao.Endereco,
+            Tipo = instituicao.Tipo,
+            Telefone = instituicao.Telefone
+        };
+
+        _dbContext.Instituicoes.Add(novaInstituicao);
         _dbContext.SaveChanges();
+
+        return CreatedAtAction(nameof(Post), new { id = novaInstituicao.CNPJ }, novaInstituicao);
     }
 
     [HttpGet(Name = "GetInstituicao")]
     public ICollection<Instituicao> Get()
     {
         return _dbContext.Instituicoes.ToList();
-    }
-
-    [HttpPatch(Name = "PatchInstituicao")]
-    public IActionResult Patch()
-    {
-        return Ok();
     }
 }
